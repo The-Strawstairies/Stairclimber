@@ -1,0 +1,22 @@
+clang
+-I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/include
+-I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/src
+-I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783
+-I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/cores/arduino
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/variants/standard
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src
+-I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src
+-I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/avr/include
+-I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include
+-I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include-fixed
+-I/Users/dieterbrehm/.platformio/packages/tool-unity
+-DPLATFORMIO=40003
+-DARDUINO_AVR_UNO
+-DF_CPU=16000000L
+-DARDUINO_ARCH_AVR
+-DARDUINO=10805
+-D__AVR_ATmega328P__

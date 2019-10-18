@@ -1,0 +1,39 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Axes3D	../src-analysis/main.py	/^from mpl_toolkits.mplot3d import Axes3D$/;"	kind:namespace	line:5
+PythonReceiveData.py	../samples/PythonReceiveData.py	1;"	kind:file	line:1
+SendReceive.py	../samples/SendReceive.py	1;"	kind:file	line:1
+Serial	../samples/SendReceive.py	/^from serial import Serial, SerialException$/;"	kind:namespace	line:3
+SerialException	../samples/SendReceive.py	/^from serial import Serial, SerialException$/;"	kind:namespace	line:3
+animation	../src-analysis/main.py	/^import matplotlib.animation as animation$/;"	kind:namespace	line:8
+arduinoComPort	../samples/PythonReceiveData.py	/^arduinoComPort = "COM6"$/;"	kind:variable	line:33
+baudRate	../samples/PythonReceiveData.py	/^baudRate = 9600$/;"	kind:variable	line:42
+calibrate_curve	../src-analysis/main.py	/^def calibrate_curve(x, y):$/;"	kind:function	line:92
+cmd_id	../samples/SendReceive.py	/^        cmd_id = int(raw_input("Please enter a command ID (1 - read potentiometer, 2 - read the button: "))$/;"	kind:variable	line:16
+curve_fit	../src-analysis/main.py	/^from scipy.optimize import curve_fit$/;"	kind:namespace	line:7
+cxn	../samples/SendReceive.py	/^cxn = Serial('\/dev\/tty.usbmodem1411', baudrate=9600)$/;"	kind:variable	line:12
+data_map	../src-analysis/main.py	/^def data_map(r, theta, phi):$/;"	kind:function	line:63
+lineOfData	../samples/PythonReceiveData.py	/^  lineOfData = serialPort.readline().decode()$/;"	kind:variable	line:60
+logger	../src-analysis/main.py	/^def logger(time, distance, yaw, pitch, cart):$/;"	kind:function	line:142
+main.py	../src-analysis/main.py	1;"	kind:file	line:1
+main_loop	../src-analysis/main.py	/^def main_loop():$/;"	kind:function	line:164
+math	../src-analysis/main.py	/^import math$/;"	kind:namespace	line:6
+matplotlib	../src-analysis/main.py	/^import matplotlib.animation as animation$/;"	kind:namespace	line:8
+matplotlib	../src-analysis/main.py	/^import matplotlib.pyplot as plt$/;"	kind:namespace	line:4
+np	../src-analysis/main.py	/^import numpy as np$/;"	kind:namespace	line:2
+pd	../src-analysis/main.py	/^import pandas as pd$/;"	kind:namespace	line:3
+plot_calibration	../src-analysis/main.py	/^def plot_calibration(x,y):$/;"	kind:function	line:103
+plt	../src-analysis/main.py	/^import matplotlib.pyplot as plt$/;"	kind:namespace	line:4
+remap	../src-analysis/main.py	/^def remap(old_val, old_min, old_max, new_min, new_max):$/;"	kind:function	line:77
+result	../samples/SendReceive.py	/^            result = cxn.readline();$/;"	kind:variable	line:23
+sensor_2_distance	../src-analysis/main.py	/^def sensor_2_distance(reading):$/;"	kind:function	line:130
+serial	../samples/PythonReceiveData.py	/^import serial$/;"	kind:namespace	line:10
+serial	../src-analysis/main.py	/^import serial$/;"	kind:namespace	line:1
+serialPort	../samples/PythonReceiveData.py	/^serialPort = serial.Serial(arduinoComPort, baudRate, timeout=1)$/;"	kind:variable	line:48
+setup_serial	../src-analysis/main.py	/^def setup_serial():$/;"	kind:function	line:12
+style	../src-analysis/main.py	/^from matplotlib import style$/;"	kind:namespace	line:9
+visualizer	../src-analysis/main.py	/^def visualizer(viz_type, data):$/;"	kind:function	line:20
