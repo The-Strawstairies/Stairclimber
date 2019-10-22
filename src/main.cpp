@@ -12,9 +12,33 @@
 struct Speeds {
 	// struct
 	// default speeds are 0
-	float left;
-	float right;
+	float linvel;
+	float lf;
+	float rf;
+	float lb;
+	float rb;
 };
+
+// class drivetrain {
+// public: 
+// 	// linear velocity
+// 	float linVel = 25.0;
+
+// 	// motors in use in drive train
+// 	Adafruit_DCMotor lf;
+// 	Adafruit_DCMotor rf;
+// 	Adafruit_DCMotor lb;
+// 	Adafruit_DCMotor rb;
+
+// 	// constructor
+// 	drivetrain();
+	
+// 	// switch drive type
+// 	void setDrivetype(uint8_t cmd);
+	
+// 	// change linear velocity
+// 	void setSpeed(float linVel);
+// };
 
 class PID_Controller {
 public:
@@ -61,14 +85,11 @@ public:
 // indicate which motor pins are being used on
 // the motor shield
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-Adafruit_DCMotor *myMotor1 = AFMS.getMotor(1);
-Adafruit_DCMotor *myMotor2 = AFMS.getMotor(2);
-
-// setup pins for the two ir sensors
-int IRVal1 = 0;
-int IRVal2 = 0;
-const int IRPin1 = 0;
-const int IRPin2 = 1;
+// Defines all four motors
+Adafruit_DCMotor *lf_motor = AFMS.getMotor(0);
+Adafruit_DCMotor *rf_motor = AFMS.getMotor(1);
+Adafruit_DCMotor *lb_motor = AFMS.getMotor(2);
+Adafruit_DCMotor *rb_motor = AFMS.getMotor(3);
 
 // start/stop variable
 int run = 0;
@@ -76,40 +97,68 @@ int run = 0;
 // struct for handling a pair of motor speeds
 struct Speeds motor_speed;
 
+
 // create a new PID controller
 // for initial tuning, set the I and D values to 0 so we just have
 // to tune the proportional part of the system.
-PID_Controller pid = PID_Controller(0, 1.0, 0.0, 0.0);;
 
-void send_motor_cmd(int left, int right) {
+// PID_Controller pid = PID_Controller(0, 1.0, 0.0, 0.0);;
+
+void send_motor_cmd(int lf, int rf, int lb, int rb) {
 		// drives motors at desired speeds
 		// (int left[-255 to 255], int right[-255 to 255]) -> void
 		// handles negative values as reverse direction
-		myMotor1->setSpeed(abs(left));
-		myMotor2->setSpeed(abs(right));
+		lf_motor->setSpeed(abs(lf));
+		rf_motor->setSpeed(abs(rf));
+		rb_motor->setSpeed(abs(rb));
+		lb_motor->setSpeed(abs(lb));
 
-		if(left>0) myMotor1->run(FORWARD);
-		else myMotor1->run(BACKWARD);
+		if(lf>0) lf_motor->run(FORWARD);
+		else lf_motor->run(BACKWARD);
 
-		if(right>0) myMotor2->run(FORWARD);
-		else myMotor2->run(BACKWARD);
+		if(rf>0) rf_motor->run(FORWARD);
+		else rf_motor->run(BACKWARD);
+
+		if(lb>0) lb_motor->run(FORWARD);
+		else lb_motor->run(BACKWARD);
+
+		if(rb>0) rb_motor->run(FORWARD);
+		else rb_motor->run(BACKWARD);
 }
 
-
-float sensor_read(int sensor_num) {
-		// sensor testing function
-		// just prints sensor vals
-
-		int reading;
-
-		if (sensor_num == 1) {
-				reading = analogRead(IRPin1);
-		} else {
-				reading = analogRead(IRPin2);
-		}
-		return reading;
+void drive_all(int speed) {
+		// drive all wheels at the same speed
+		send_motor_cmd(speed, speed, speed, speed);
 }
 
+void drive_front(int speed) {
+		// drive front wheels of the robot
+		send_motor_cmd(speed, speed, 0, 0);
+}
+
+void drive_back(int speed) {
+		// drive back wheels of the robot
+		send_motor_cmd(0, 0, speed, speed);
+}
+
+// drivetrain::drivetrain() {
+	
+// }
+
+// void drivetrain::setDrivetype(uint8_t cmd) {
+// 		switch (cmd) {
+// 		case ALL:
+// 			// drive all wheels
+			
+// 			break;
+// 		case FRONT:
+// 			// drive front wheels
+// 			break;
+// 		case BACK:
+// 			// drive back wheels
+// 			break;
+// 		}
+// }
 
 PID_Controller::PID_Controller(float setPoint_new, float Kp_new, float Ki_new, float Kd_new) {
 		// construct!
@@ -183,69 +232,82 @@ void PID_Controller::loopStep(float leftSensor, float rightSensor, Speeds *motor
 		// vr = s + (w d)/2
 		// minimum of output: 0
 		// maximum of output:
-		motor_speed->left  = linVel - (output * wheelBase) / 2;
-		motor_speed->right = linVel + (output * wheelBase) / 2;
+		
+		//motor_speed->left  = linVel - (output * wheelBase) / 2;
+		//motor_speed->right = linVel + (output * wheelBase) / 2;
 };
 
 
-void serialReader(PID_Controller *pid) {
+void serialReader() {
 	// read the serial buffer for new operations which are:
-	//     START code -> S
-  //     STOP code  -> E
-  //     P code     -> P1.0
-  //     I code     -> I0.0
-	//     D code     -> D0.0
+	// 	   START code -> S
+  	//     STOP code  -> E	
+	// 	   VEL code   -> V50.0
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
-	if (Serial.available() > 0) {
-		if (Serial.peek() == 'S') {
+	char input = Serial.peek();
+	if (Serial.available()>0){
+		switch(input){
+			case 'S': case 's':
 				// start the program
 				Serial.read();
-				Serial.println("start pid loop");
+				Serial.println("start running!");
 				run = 1;
-		} else if (Serial.peek() == 'E') {
+				break;
+			case 'E': case 'e':
 				// end the program
 				Serial.read();
-				Serial.println("ending the pid loop");
+				Serial.println("stop running!");
 				run = 0;
-		} else if (Serial.peek() == 'P') {
-				// read new proportional const
-				Serial.read();
-				float kp = Serial.parseFloat();
-				Serial.println("setting p constant");
-				pid->setKp(kp);
-		} else if (Serial.peek() == 'I') {
-				// read new integral const
-				Serial.read();
-				float ki = Serial.parseFloat();
-				Serial.println("setting I constant");
-				pid->setKi(ki);
-		} else if (Serial.peek() == 'D') {
-				// read new derivative value
-				Serial.read();
-				float kd = Serial.parseFloat();
-				Serial.println("setting D constant");
-				pid->setKd(kd);
-		} else if (Serial.peek() == 'V') {
-				// read new derivative value
+				break;
+			case 'V': case 'v':
+				// change the linear velocity
 				Serial.read();
 				float vel = Serial.parseFloat();
-				Serial.println("setting speed constant");
-				pid->setSpeed(vel);
-		} else {
-			while(Serial.available()) {
-				Serial.read();
-				delay(10);
-			}
-		}
-		Serial.print("I'm ready!");
+				Serial.println("setting linear velocity");
+				motor_speed.linvel = vel;
+				break;
+			default:
+				// clears buffer
+				while(Serial.available()){
+					Serial.read();
+					delay(10);
+				}	
+		}		
 	}
+	
+	// if (Serial.available() > 0) {
+	// 	if (Serial.peek() == 'S') {
+	// 			// start the program
+	// 			Serial.read();
+	// 			Serial.println("start pid loop");
+	// 			run = 1;
+	// 	} else if (Serial.peek() == 'E') {
+	// 			// end the program
+	// 			Serial.read();
+	// 			Serial.println("ending the pid loop");
+	// 			run = 0;
+	// 	} else if (Serial.peek() == 'V') {
+	// 			// read new derivative value
+	// 			Serial.read();
+	// 			float vel = Serial.parseFloat();
+	// 			Serial.println("setting speed constant");
+	// 			motor_speed.linvel = vel;
+	// 	} else {
+	// 		while(Serial.available()) {
+	// 			Serial.read();
+	// 			delay(10);
+	// 		}
+	// 	}
+	// 	Serial.print("I'm ready!");
+	// }
+	
 }
 
 void setup() {
 		// setup the motor shield controller
 		AFMS.begin();
-		send_motor_cmd(0,0);
+		send_motor_cmd(0, 0, 0, 0);
 		Serial.begin(115200);
 		delay(10);
 }
@@ -255,45 +317,30 @@ void loop() {
 		// Serial.println(sensor_test());
 		// delay(1);
 
-		float leftRead  = sensor_read(1);
-		float rightRead = sensor_read(2);
-
-
 		// respond to serial operations
-		serialReader(&pid);
+		serialReader();
 
 		if (run == 1) {
 			// // check if system should run based on serial input
 
 			// // perform PID calculations for the current step
-			pid.loopStep(leftRead, rightRead, &motor_speed);
+			//pid.loopStep(leftRead, rightRead, &motor_speed);
 
 			// // update motor speeds to the motor controller
-			send_motor_cmd(motor_speed.left, motor_speed.right);
+			drive_all(motor_speed.linvel);
 
 			// // log values
 			// // LOG,time,left,right,sensor_left, sensor_right
-			Serial.print("LOG,Motors,");
-			Serial.print(String(motor_speed.left));
-			Serial.print(",");
-			Serial.print(String(motor_speed.right));
-			Serial.print(",Sensors,");
-			Serial.print(String(leftRead));
-			Serial.print(",");
-			Serial.print(String(rightRead));
-			Serial.print(",PID,");
-			Serial.print(String(pid.Kp));
-			Serial.print(",");
-			Serial.print(String(pid.Ki));
-			Serial.print(",");
-			Serial.print(String(pid.Kd));
-			Serial.print(",");
-			Serial.print(String(run));
-			Serial.print(",");
-			Serial.println(String(millis()));
+			// Serial.print("LOG,Motors,");
+			// Serial.print(String(motor_speed.left));
+			// Serial.print(",");
+			// Serial.print(String(motor_speed.right));
+			// Serial.print(",");
+			// Serial.print(String(run));
+			// Serial.print(",");
+			// Serial.println(String(millis()));
 		} else {
-			myMotor1->setSpeed(0);
-			myMotor2->setSpeed(0);
+			drive_all(0);
 		}
 }
 

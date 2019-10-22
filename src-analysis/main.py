@@ -37,15 +37,12 @@ def parse_line(line_of_data, recorder):
     if output:
         if output[0] == "LOG":
             # handle logged data
-            m_l = output[2]
-            m_r = output[3]
-            s_l = output[5]
-            s_r = output[6]
-            p_c = output[8]
-            i_c = output[9]
-            d_c = output[10]
-            run_state = output[11]
-            t = output[12]
+            m_lf = output[2]
+            m_rf = output[3]
+            m_lb = output[4]
+            m_rb = output[5]
+            run_state = output[6]
+            t = output[7]
             print("Motor Outputs: (L)", m_l, "(R)", m_r,
                   "Sensor Outputs: (L)", s_l, "(R)", s_r,
                   "PID Constants: (P)", p_c, "(I)", i_c, "(D)", d_c,
