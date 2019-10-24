@@ -91,50 +91,49 @@ def main():
         if input_queue.qsize() > 0:
             input_reading = input_queue.get()
 
-            if input_reading == "S":
+            if (input_reading[0] == "S" or input_reading[0] == "s"):
                 serial_handler.write("S".encode())
                 # reset the nested list system when we start a new run
                 data_recorder = [["t", "ml", "mr", "sl", "sr", "p", "i", "d"]]
-            elif input_reading == "E":
+            elif (input_reading[0] == "E" or input_reading[0] == "e"):
                 serial_handler.write("E".encode())
                 # convert to dataframe and write to a csv when we stop the program!
                 df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
                 df.to_csv("robot_run", sep=',', encoding='utf-8')
                 # print it out to see if that worked
                 print(df)
-            elif input_reading[0] == "P":
+            elif (input_reading[0] == "P" or input_reading[0] == "p"):
                 # change the proportional constant
                 output = "P" + input_reading[1:]
                 serial_handler.write(output.encode())
-            elif input_reading[0] == "I":
+            elif (input_reading[0] == "I" or input_reading[0] == "i"):
                 # change the integral constant
                 output = "I" + input_reading[1:]
                 serial_handler.write(output.encode())
-            elif input_reading[0] == "D":
+            elif (input_reading[0] == "D" or input_reading[0] == "d"):
                 # change the derivative constant
                 output = "D" + input_reading[1:]
                 serial_handler.write(output.encode())
-            elif input_reading[0] == "V":
+            elif (input_reading[0] == "V" or input_reading[0] == "v"):
                 # change the speed of the robot
                 output = "V" + input_reading[1:]
                 serial_handler.write(output.encode())
             # Keyboard Movement
-            elif input_reading[0] == "T":
+            elif (input_reading[0] == "T" or input_reading[0] == "t"):
                 # Forward
-                output = "T"
-                serial_handler.write(output.encode())
-            elif input_reading[0] == "F":
+                serial_handler.write("T".encode())
+            elif (input_reading[0] == "F" or input_reading[0] == "f"):
                 # Left
-                output = "F"
-                serial_handler.write(output.encode())
-            elif input_reading[0] == "G":
+                serial_handler.write("F".encode())
+            elif (input_reading[0] == "G" or input_reading[0] == 'g'):
                 # Backwards
-                output = "G"
-                serial_handler.write(output.encode())
-            elif input_reading[0] == "H":
+                serial_handler.write("G".encode())
+            elif (input_reading[0] == "H" or input_reading[0] == "h"):
                 # Right
-                output = "H"
-                serial_handler.write(output.encode())
+                serial_handler.write("H".encode())
+            elif (input_reading[0] == "R" or input_reading[0] == "r"):
+                # stop
+                serial_handler.write("R".encode())
 
 
 if __name__ == '__main__':

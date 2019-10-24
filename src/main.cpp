@@ -93,6 +93,9 @@ Adafruit_DCMotor *rb_motor = AFMS.getMotor(2);
 // start/stop variable
 int run = 0;
 
+// Use mode to shift between different drive styles
+int mode = 0;
+
 // struct for handling a pair of motor speeds
 struct Speeds motor_speed;
 
@@ -254,9 +257,9 @@ void serialReader() {
 	// 	   VEL code   -> V50.0
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
-	// char input = Serial.peek();
-	// if (Serial.available()>0){
-	// 	switch(input){
+	// if (Serial.available() > 0){
+	// 	char input = Serial.peek();
+	// 	switch(input) {
 	// 		case 'S': case 's':
 	// 			// start the program
 	// 			Serial.read();
@@ -267,6 +270,7 @@ void serialReader() {
 	// 			// end the program
 	// 			Serial.read();
 	// 			Serial.println("stop running!");
+	// 			mode = 0;
 	// 			run = 0;
 	// 			break;
 	// 		case 'V': case 'v':
@@ -278,34 +282,36 @@ void serialReader() {
 	// 			break;
 			
 	// 		// Drive with keyboard
+	// 		case 'R': case 'r':
+	// 			// Stop
+	// 			Serial.read();
+	// 			mode = 0;
+	// 			break;
 	// 		case 'T': case 't':
 	// 			// Drive forward
 	// 			Serial.read();
-	// 			drive_all(motor_speed.linvel);
+	// 			mode = 1;
 	// 			break;
 	// 		case 'F': case 'f':
-	// 			// Drive left
+	// 			// Drive counter-clockwise in place
 	// 			Serial.read();
-	// 			turn_counterclockwise(motor_speed.linvel);
+	// 			mode = 2;
 	// 			break;
 	// 		case 'G': case 'g':
 	// 			// Drive backwards
 	// 			Serial.read();
-	// 			drive_all(-motor_speed.linvel);
+	// 			mode = 3;
 	// 			break;
 	// 		case 'H': case 'h':
-	// 			// Drive right
+	// 			// Drive clockwise in place
 	// 			Serial.read();
-	// 			turn_clockwise(motor_speed.linvel);
+	// 			mode = 4;
 	// 			break;
 
 	// 		default:
 	// 			// clears buffer
-	// 			while(Serial.available()){
-	// 				Serial.read();
-	// 				delay(10);
-	// 				Serial.println("here");
-	// 			}
+	// 			Serial.read();
+	// 			delay(10);
 	// 			break;	
 	// 	}		
 	// }
@@ -314,12 +320,13 @@ void serialReader() {
 		if (Serial.peek() == 'S') {
 				// start the program
 				Serial.read();
-				Serial.println("start drive loop");
+				Serial.println("starting the drive loop");
 				run = 1;
 		} else if (Serial.peek() == 'E') {
 				// end the program
 				Serial.read();
 				Serial.println("ending the drive loop");
+				mode = 0;
 				run = 0;
 		} else if (Serial.peek() == 'V') {
 				// read new derivative value
@@ -327,19 +334,40 @@ void serialReader() {
 				float vel = Serial.parseFloat();
 				Serial.println("setting speed constant");
 				motor_speed.linvel = vel;
+
+		// Use modes for keyboard drive
+		} else if (Serial.peek() == 'R') {
+				// Stop
+				Serial.read();
+				mode = 0;
+		} else if (Serial.peek() == 'T') {
+				// Forwards
+				Serial.read();
+				mode = 1;
+		} else if (Serial.peek() == 'F') {
+				// Counter-clockwise turn in place
+				Serial.read();
+				mode = 2;
+		} else if (Serial.peek() == 'G') {
+				// Backwards
+				Serial.read();
+				mode = 3;
+		} else if (Serial.peek() == 'H') {
+				// Clockwise turn in place
+				Serial.read();
+				mode = 4;
 		} else {
 			while(Serial.available()) {
 				Serial.read();
 				delay(10);
 			}
 		}
-		Serial.print("I'm ready!");
+		// Serial.print("I'm ready!");
 	}
 	
 }
 
-// Use mode to shift between different drive styles
-int mode = 0;
+
 void setup() {
 		// setup the motor shield controller
 		AFMS.begin();
@@ -355,33 +383,47 @@ void loop() {
 
 		// respond to serial operations
 		serialReader();
-
 		if (run == 1) {
 
-			// switch(mode){
-			// 	case 0: 
-			// 		drive_all(0);
-			// 		break;
+			switch(mode){
+				case 0: 
+					drive_all(0);
+					break;
+				case 1:
+					drive_all(motor_speed.linvel);
+					break;
+				case 2:
+					turn_counterclockwise(motor_speed.linvel);
+					break;
+				case 3:
+					drive_all(-motor_speed.linvel);
+					break;
+				case 4:
+					turn_clockwise(motor_speed.linvel);
+					break;
+				default:
+					drive_all(0);
+					break;
+			}
 
-			// }
-		// 	// // check if system should run based on serial input
+			// log values
+			// LOG,time,left,right,sensor_left, sensor_right
+			// Serial.print("LOG,Motors,");
+			// Serial.println(String(motor_speed.linvel));	
 
-		// 	// // perform PID calculations for the current step
-		// 	//pid.loopStep(leftRead, rightRead, &motor_speed);
-
-		// 	// // update motor speeds to the motor controller
-			drive_all(motor_speed.linvel);
-
-		// 	// // log values
-		// 	// // LOG,time,left,right,sensor_left, sensor_right
-		Serial.print("LOG,Motors,");
-		Serial.println(String(motor_speed.linvel));	
-		// Serial.println(",");
-		// Serial.print(String(run));
-		// 	// Serial.print(",");
-		// 	// Serial.println(String(millis()));
 		} else {
 		 	drive_all(0);
 		}
 }
 
+"""
+For drive commands
+T = forward
+F = counterclockwise turn in place
+G = backward
+H = clockwise turn in place
+R = stop
+
+S = run
+E = stop running
+"""
