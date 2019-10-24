@@ -118,6 +118,23 @@ def main():
                 # change the speed of the robot
                 output = "V" + input_reading[1:]
                 serial_handler.write(output.encode())
+            # Keyboard Movement
+            elif input_reading[0] == "T":
+                # Forward
+                output = "T"
+                serial_handler.write(output.encode())
+            elif input_reading[0] == "F":
+                # Left
+                output = "F"
+                serial_handler.write(output.encode())
+            elif input_reading[0] == "G":
+                # Backwards
+                output = "G"
+                serial_handler.write(output.encode())
+            elif input_reading[0] == "H":
+                # Right
+                output = "H"
+                serial_handler.write(output.encode())
 
 
 if __name__ == '__main__':

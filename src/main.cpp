@@ -11,8 +11,7 @@
 
 struct Speeds {
 	// struct
-	// default speeds are 0
-	float linvel;
+	float linvel = 30;
 	float lf;
 	float rf;
 	float lb;
@@ -86,10 +85,10 @@ public:
 // the motor shield
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 // Defines all four motors
-Adafruit_DCMotor *lf_motor = AFMS.getMotor(0);
-Adafruit_DCMotor *rf_motor = AFMS.getMotor(1);
-Adafruit_DCMotor *lb_motor = AFMS.getMotor(2);
-Adafruit_DCMotor *rb_motor = AFMS.getMotor(3);
+Adafruit_DCMotor *lf_motor = AFMS.getMotor(3);
+Adafruit_DCMotor *rf_motor = AFMS.getMotor(4);
+Adafruit_DCMotor *lb_motor = AFMS.getMotor(1);
+Adafruit_DCMotor *rb_motor = AFMS.getMotor(2);
 
 // start/stop variable
 int run = 0;
@@ -122,13 +121,23 @@ void send_motor_cmd(int lf, int rf, int lb, int rb) {
 		if(lb>0) lb_motor->run(FORWARD);
 		else lb_motor->run(BACKWARD);
 
-		if(rb>0) rb_motor->run(FORWARD);
-		else rb_motor->run(BACKWARD);
+		if(rb>0) rb_motor->run(BACKWARD);
+		else rb_motor->run(FORWARD);
 }
 
 void drive_all(int speed) {
 		// drive all wheels at the same speed
 		send_motor_cmd(speed, speed, speed, speed);
+}
+
+void turn_counterclockwise(int speed){
+		// turn counterclockwise in place
+		send_motor_cmd(speed/2, -speed/2, -speed/2, speed/2);
+}
+
+void turn_clockwise(int speed){
+		// turn clockwise in place
+		send_motor_cmd(-speed/2, speed/2, speed/2, -speed/2);
 }
 
 void drive_front(int speed) {
@@ -245,65 +254,92 @@ void serialReader() {
 	// 	   VEL code   -> V50.0
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
-	char input = Serial.peek();
-	if (Serial.available()>0){
-		switch(input){
-			case 'S': case 's':
-				// start the program
-				Serial.read();
-				Serial.println("start running!");
-				run = 1;
-				break;
-			case 'E': case 'e':
-				// end the program
-				Serial.read();
-				Serial.println("stop running!");
-				run = 0;
-				break;
-			case 'V': case 'v':
-				// change the linear velocity
-				Serial.read();
-				float vel = Serial.parseFloat();
-				Serial.println("setting linear velocity");
-				motor_speed.linvel = vel;
-				break;
-			default:
-				// clears buffer
-				while(Serial.available()){
-					Serial.read();
-					delay(10);
-				}	
-		}		
-	}
-	
-	// if (Serial.available() > 0) {
-	// 	if (Serial.peek() == 'S') {
+	// char input = Serial.peek();
+	// if (Serial.available()>0){
+	// 	switch(input){
+	// 		case 'S': case 's':
 	// 			// start the program
 	// 			Serial.read();
-	// 			Serial.println("start pid loop");
+	// 			Serial.println("start running!");
 	// 			run = 1;
-	// 	} else if (Serial.peek() == 'E') {
+	// 			break;
+	// 		case 'E': case 'e':
 	// 			// end the program
 	// 			Serial.read();
-	// 			Serial.println("ending the pid loop");
+	// 			Serial.println("stop running!");
 	// 			run = 0;
-	// 	} else if (Serial.peek() == 'V') {
-	// 			// read new derivative value
+	// 			break;
+	// 		case 'V': case 'v':
+	// 			// change the linear velocity
 	// 			Serial.read();
 	// 			float vel = Serial.parseFloat();
-	// 			Serial.println("setting speed constant");
+	// 			Serial.println("setting linear velocity");
 	// 			motor_speed.linvel = vel;
-	// 	} else {
-	// 		while(Serial.available()) {
+	// 			break;
+			
+	// 		// Drive with keyboard
+	// 		case 'T': case 't':
+	// 			// Drive forward
 	// 			Serial.read();
-	// 			delay(10);
-	// 		}
-	// 	}
-	// 	Serial.print("I'm ready!");
+	// 			drive_all(motor_speed.linvel);
+	// 			break;
+	// 		case 'F': case 'f':
+	// 			// Drive left
+	// 			Serial.read();
+	// 			turn_counterclockwise(motor_speed.linvel);
+	// 			break;
+	// 		case 'G': case 'g':
+	// 			// Drive backwards
+	// 			Serial.read();
+	// 			drive_all(-motor_speed.linvel);
+	// 			break;
+	// 		case 'H': case 'h':
+	// 			// Drive right
+	// 			Serial.read();
+	// 			turn_clockwise(motor_speed.linvel);
+	// 			break;
+
+	// 		default:
+	// 			// clears buffer
+	// 			while(Serial.available()){
+	// 				Serial.read();
+	// 				delay(10);
+	// 				Serial.println("here");
+	// 			}
+	// 			break;	
+	// 	}		
 	// }
+	
+	if (Serial.available() > 0) {
+		if (Serial.peek() == 'S') {
+				// start the program
+				Serial.read();
+				Serial.println("start drive loop");
+				run = 1;
+		} else if (Serial.peek() == 'E') {
+				// end the program
+				Serial.read();
+				Serial.println("ending the drive loop");
+				run = 0;
+		} else if (Serial.peek() == 'V') {
+				// read new derivative value
+				Serial.read();
+				float vel = Serial.parseFloat();
+				Serial.println("setting speed constant");
+				motor_speed.linvel = vel;
+		} else {
+			while(Serial.available()) {
+				Serial.read();
+				delay(10);
+			}
+		}
+		Serial.print("I'm ready!");
+	}
 	
 }
 
+// Use mode to shift between different drive styles
+int mode = 0;
 void setup() {
 		// setup the motor shield controller
 		AFMS.begin();
@@ -321,26 +357,31 @@ void loop() {
 		serialReader();
 
 		if (run == 1) {
-			// // check if system should run based on serial input
 
-			// // perform PID calculations for the current step
-			//pid.loopStep(leftRead, rightRead, &motor_speed);
+			// switch(mode){
+			// 	case 0: 
+			// 		drive_all(0);
+			// 		break;
 
-			// // update motor speeds to the motor controller
+			// }
+		// 	// // check if system should run based on serial input
+
+		// 	// // perform PID calculations for the current step
+		// 	//pid.loopStep(leftRead, rightRead, &motor_speed);
+
+		// 	// // update motor speeds to the motor controller
 			drive_all(motor_speed.linvel);
 
-			// // log values
-			// // LOG,time,left,right,sensor_left, sensor_right
-			// Serial.print("LOG,Motors,");
-			// Serial.print(String(motor_speed.left));
-			// Serial.print(",");
-			// Serial.print(String(motor_speed.right));
-			// Serial.print(",");
-			// Serial.print(String(run));
-			// Serial.print(",");
-			// Serial.println(String(millis()));
+		// 	// // log values
+		// 	// // LOG,time,left,right,sensor_left, sensor_right
+		Serial.print("LOG,Motors,");
+		Serial.println(String(motor_speed.linvel));	
+		// Serial.println(",");
+		// Serial.print(String(run));
+		// 	// Serial.print(",");
+		// 	// Serial.println(String(millis()));
 		} else {
-			drive_all(0);
+		 	drive_all(0);
 		}
 }
 
