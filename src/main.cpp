@@ -416,14 +416,14 @@ void loop() {
 		}
 }
 
-"""
-For drive commands
-T = forward
-F = counterclockwise turn in place
-G = backward
-H = clockwise turn in place
-R = stop
 
-S = run
-E = stop running
-"""
+// For drive commands
+// T = forward
+// F = counterclockwise turn in place
+// G = backward
+// H = clockwise turn in place
+// R = stop
+
+// S = run
+// E = stop running
+
