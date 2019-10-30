@@ -19,7 +19,7 @@ struct Speeds {
 };
 
 // class drivetrain {
-// public: 
+// public:
 // 	// linear velocity
 // 	float linVel = 25.0;
 
@@ -31,10 +31,10 @@ struct Speeds {
 
 // 	// constructor
 // 	drivetrain();
-	
+
 // 	// switch drive type
 // 	void setDrivetype(uint8_t cmd);
-	
+
 // 	// change linear velocity
 // 	void setSpeed(float linVel);
 // };
@@ -154,14 +154,14 @@ void drive_back(int speed) {
 }
 
 // drivetrain::drivetrain() {
-	
+
 // }
 
 // void drivetrain::setDrivetype(uint8_t cmd) {
 // 		switch (cmd) {
 // 		case ALL:
 // 			// drive all wheels
-			
+
 // 			break;
 // 		case FRONT:
 // 			// drive front wheels
@@ -239,12 +239,12 @@ void PID_Controller::loopStep(float leftSensor, float rightSensor, Speeds *motor
 
 		// set speed with speed.left // speed.right = output;
 		// idea: output of PID as angular velocity
-		
+
 		// Vl = s - (w d)/2
 		// vr = s + (w d)/2
 		// minimum of output: 0
 		// maximum of output:
-		
+
 		//motor_speed->left  = linVel - (output * wheelBase) / 2;
 		//motor_speed->right = linVel + (output * wheelBase) / 2;
 };
@@ -253,7 +253,7 @@ void PID_Controller::loopStep(float leftSensor, float rightSensor, Speeds *motor
 void serialReader() {
 	// read the serial buffer for new operations which are:
 	// 	   START code -> S
-  	//     STOP code  -> E	
+  //     STOP code  -> E
 	// 	   VEL code   -> V50.0
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
@@ -280,7 +280,6 @@ void serialReader() {
 	// 			Serial.println("setting linear velocity");
 	// 			motor_speed.linvel = vel;
 	// 			break;
-			
 	// 		// Drive with keyboard
 	// 		case 'R': case 'r':
 	// 			// Stop
@@ -312,10 +311,9 @@ void serialReader() {
 	// 			// clears buffer
 	// 			Serial.read();
 	// 			delay(10);
-	// 			break;	
-	// 	}		
+	// 			break;
+	// 	}
 	// }
-	
 	if (Serial.available() > 0) {
 		if (Serial.peek() == 'S') {
 				// start the program
@@ -362,9 +360,8 @@ void serialReader() {
 				delay(10);
 			}
 		}
-		// Serial.print("I'm ready!");
 	}
-	
+
 }
 
 
@@ -378,15 +375,13 @@ void setup() {
 
 void loop() {
 		//print out the sensor reading to the serial
-		// Serial.println(sensor_test());
-		// delay(1);
 
 		// respond to serial operations
 		serialReader();
 		if (run == 1) {
 
 			switch(mode){
-				case 0: 
+				case 0:
 					drive_all(0);
 					break;
 				case 1:
@@ -409,7 +404,7 @@ void loop() {
 			// log values
 			// LOG,time,left,right,sensor_left, sensor_right
 			// Serial.print("LOG,Motors,");
-			// Serial.println(String(motor_speed.linvel));	
+			// Serial.println(String(motor_speed.linvel));
 
 		} else {
 		 	drive_all(0);
@@ -426,4 +421,3 @@ void loop() {
 
 // S = run
 // E = stop running
-
