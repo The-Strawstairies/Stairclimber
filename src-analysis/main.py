@@ -9,6 +9,7 @@ from matplotlib import style
 import threading
 import queue
 import time
+import sys, select, termios, tty
 
 
 def setup_serial():
@@ -52,13 +53,22 @@ def parse_line(line_of_data, recorder):
             recorder.append(new_items)
     return recorder
 
+def getKey():
+    """Get a keyboard input without requiring a new line too be entered"""
+    tty.setraw(sys.stdin.fileno())
+    select.select([sys.stdin], [], [], 0)
+    key = sys.stdin.read(1)
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+    return key
+
 
 def read_kbd(input_queue):
     """read from the keyboard and put it into the cross-thread queue
     to later run actions on the robot with the laptop keyboard."""
     while True:
-        reading = input()
-        input_queue.put(reading)
+        # reading = input()
+        key = getKey()
+        input_queue.put(key)
 
 
 def main():
@@ -74,7 +84,7 @@ def main():
     kbd_thread.start()
 
     # setup the serial object
-    serial_handler = setup_serial()
+    # serial_handler = setup_serial()
 
     # headers for our soon-to-be data frame
     data_recorder = [["t", "ml", "mr", "sl", "sr", "p", "i", "d"]]
@@ -90,7 +100,6 @@ def main():
         # queues and threading usage
         if input_queue.qsize() > 0:
             input_reading = input_queue.get()
-
             if (input_reading[0] == "S" or input_reading[0] == "s"):
                 serial_handler.write("S".encode())
                 # reset the nested list system when we start a new run
@@ -137,4 +146,5 @@ def main():
 
 
 if __name__ == '__main__':
+    settings = termios.tcgetattr(sys.stdin)
     main()
