@@ -23,13 +23,7 @@ def setup_serial():
 def parse_line(line_of_data, recorder):
     """Handle input from the serial monitor and logs it. Features the following codes
     (with examples)
-    START code -> S
-    STOP code  -> E
-    P code     -> P1.0
-    I code     -> I0.0
-    D code     -> D0.0
-    line_of_data: unplit string of line output from serial output
-    E.G: ['LOG', 'Motors', '25.25', '24.75', 'Sensors', '956.00', '951.00', 'PID', '1.00', '0.00', '0.00']"""
+    E.G: ['LOG', 'TIME', '500', Motors', '25.25', '24.75']"""
 
     # split output by commas
     output = [str(x) for x in line_of_data.replace("\r\n", "").split(',')]
@@ -38,23 +32,19 @@ def parse_line(line_of_data, recorder):
     if output:
         if output[0] == "LOG":
             # handle logged data
-            m_lf = output[2]
-            m_rf = output[3]
-            m_lb = output[4]
-            m_rb = output[5]
-            run_state = output[6]
-            t = output[7]
-            print("Motor Outputs: (L)", m_l, "(R)", m_r,
-                  "Sensor Outputs: (L)", s_l, "(R)", s_r,
-                  "PID Constants: (P)", p_c, "(I)", i_c, "(D)", d_c,
-                  "run", run_state)
-            new_items = [t, m_l, m_r, s_l, s_r, p_c, i_c, d_c]
+            m_l = output[2]
+            m_r = output[3]
+            t = output[5]
+            print("Motor Outputs: (L)", m_l, "(R)", m_r)
+            new_items = [t, m_l, m_r]
 
             recorder.append(new_items)
     return recorder
 
+
 def getKey():
-    """Get a keyboard input without requiring a new line too be entered"""
+    """Get a keyboard input without requiring a new line too be entered
+    TODO: fix spacing issues present in output"""
     tty.setraw(sys.stdin.fileno())
     select.select([sys.stdin], [], [], 0)
     key = sys.stdin.read(1)
@@ -64,7 +54,8 @@ def getKey():
 
 def read_kbd(input_queue):
     """read from the keyboard and put it into the cross-thread queue
-    to later run actions on the robot with the laptop keyboard."""
+    to later run actions on the robot with the laptop keyboard.
+    input_queue: the queue we are going to add presses to"""
     while True:
         # reading = input()
         key = getKey()
@@ -84,7 +75,7 @@ def main():
     kbd_thread.start()
 
     # setup the serial object
-    # serial_handler = setup_serial()
+    serial_handler = setup_serial()
 
     # headers for our soon-to-be data frame
     data_recorder = [["t", "ml", "mr", "sl", "sr", "p", "i", "d"]]
@@ -103,26 +94,15 @@ def main():
             if (input_reading[0] == "S" or input_reading[0] == "s"):
                 serial_handler.write("S".encode())
                 # reset the nested list system when we start a new run
-                data_recorder = [["t", "ml", "mr", "sl", "sr", "p", "i", "d"]]
+                data_recorder = [["t", "ml", "mr"]]
             elif (input_reading[0] == "E" or input_reading[0] == "e"):
                 serial_handler.write("E".encode())
-                # convert to dataframe and write to a csv when we stop the program!
+                # convert to dataframe and write to a csv when
+                # we stop the program!
                 df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
                 df.to_csv("robot_run", sep=',', encoding='utf-8')
                 # print it out to see if that worked
                 print(df)
-            elif (input_reading[0] == "P" or input_reading[0] == "p"):
-                # change the proportional constant
-                output = "P" + input_reading[1:]
-                serial_handler.write(output.encode())
-            elif (input_reading[0] == "I" or input_reading[0] == "i"):
-                # change the integral constant
-                output = "I" + input_reading[1:]
-                serial_handler.write(output.encode())
-            elif (input_reading[0] == "D" or input_reading[0] == "d"):
-                # change the derivative constant
-                output = "D" + input_reading[1:]
-                serial_handler.write(output.encode())
             elif (input_reading[0] == "V" or input_reading[0] == "v"):
                 # change the speed of the robot
                 output = "V" + input_reading[1:]
