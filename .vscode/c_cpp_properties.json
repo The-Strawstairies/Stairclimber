@@ -8,6 +8,7 @@
             "includePath": [
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/include",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/src",
+                "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Servo_ID883/src",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility",
                 "C:/Users/dtarazi/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
@@ -25,6 +26,7 @@
                 "path": [
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/include",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/src",
+                    "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Servo_ID883/src",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility",
                     "C:/Users/dtarazi/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",

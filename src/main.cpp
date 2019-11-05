@@ -3,16 +3,21 @@
 // August 17, 2014
 // Public Domain
 
-#include<Arduino.h>
-#include<Wire.h>
+#include "Arduino.h"
+#include "Wire.h"
+#include "pid.h"
+#include "main.h"
+#include "Servo.h"
 
-const int MPU_ADDR=0x68;  // I2C address of the MPU-6050 with AD0 set low
+//Servo Setup
+Servo balancer;
 
-struct imu_record{
-	double AcX,AcY,AcZ,GyX,GyY,GyZ;
-};
+struct imu_data imu_vals;
 
-struct imu_record imu_vals;
+double current_angle = 0;
+
+// Define a pid controller -> pid(setpoint (angle), p, i, d)
+pid pid_control = pid(0, 1.0, 0.0, 0.0);
 
 
 void read_accel(){
@@ -41,6 +46,13 @@ void read_gyro(){
 	imu_vals.GyZ = double(Wire.read()<<8|Wire.read()) / 131.0;  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
 }
 
+void update_angle(double gyro_reading) {
+	// update the current angle given change from gyro & time step
+	if (abs(gyro_reading) > 10){
+		current_angle += (gyro_reading);
+	}
+}
+
 void print_imu_values(){
 	Serial.print("AcX = "); Serial.print(imu_vals.AcX);
 	Serial.print(" | AcY = "); Serial.print(imu_vals.AcY);
@@ -51,7 +63,12 @@ void print_imu_values(){
 	Serial.print(" | GyZ = "); Serial.println(imu_vals.GyZ);
 }
 
+
 void setup(){
+	// Servo setup
+	balancer.attach(10);
+	
+	// IMU config
 	Wire.begin();
 	Wire.beginTransmission(MPU_ADDR);
 	Wire.write(0x6B);  // PWR_MGMT_1 register
@@ -75,7 +92,20 @@ void setup(){
 void loop(){
 	read_accel();
 	read_gyro();
-	print_imu_values();
 
-	delay(500);
+	// adjust the current angle
+	update_angle(imu_vals.GyX);
+
+	// given angle, update current angle
+	pid_control.loopStep(current_angle);
+	balancer.write(12);
+
+	if (millis() % 1000 == 0){
+		Serial.print("pid output");
+		Serial.print(pid_control.output);
+		Serial.print(" raw reading ");
+		Serial.println(imu_vals.GyX);
+	}
+	//print_imu_values();
+	//delay(200);
 }
