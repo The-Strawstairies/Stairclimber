@@ -78,13 +78,13 @@ def main():
     serial_handler = setup_serial()
 
     # headers for our soon-to-be data frame
-    data_recorder = [["t", "ml", "mr", "sl", "sr", "p", "i", "d"]]
+    # data_recorder = [["t", "ml", "mr"]]
 
     while True:
 
         # log the data and run parsing function
-        line_of_data = serial_handler.readline().decode()
-        data_recorder = parse_line(line_of_data, data_recorder)
+        # line_of_data = serial_handler.readline().decode()
+        # data_recorder = parse_line(line_of_data, data_recorder)
 
         # https://stackoverflow.com/questions/5404068/how-to-read-keyboard-input/53344690#53344690
         # for getting non blocking threaed kbd input. Used for figuring out
@@ -93,36 +93,48 @@ def main():
             input_reading = input_queue.get()
             if (input_reading[0] == "S" or input_reading[0] == "s"):
                 serial_handler.write("S".encode())
+                # print("python side start\n")
                 # reset the nested list system when we start a new run
-                data_recorder = [["t", "ml", "mr"]]
+                # data_recorder = [["t", "ml", "mr"]]
             elif (input_reading[0] == "E" or input_reading[0] == "e"):
                 serial_handler.write("E".encode())
+                # print("python side end\n")
                 # convert to dataframe and write to a csv when
                 # we stop the program!
-                df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
-                df.to_csv("robot_run", sep=',', encoding='utf-8')
+                # df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
+                # df.to_csv("robot_run", sep=',', encoding='utf-8')
                 # print it out to see if that worked
-                print(df)
+                # print(df)
             elif (input_reading[0] == "V" or input_reading[0] == "v"):
                 # change the speed of the robot
                 output = "V" + input_reading[1:]
-                serial_handler.write(output.encode())
+                # serial_handler.write(output.encode())
+                serial_handler.write("V75".encode())
+                # print("python side speed change\n")
             # Keyboard Movement
             elif (input_reading[0] == "T" or input_reading[0] == "t"):
                 # Forward
                 serial_handler.write("T".encode())
+                # print("python side go forwards\n")
             elif (input_reading[0] == "F" or input_reading[0] == "f"):
                 # Left
                 serial_handler.write("F".encode())
+                # print("python side left turn\n")
             elif (input_reading[0] == "G" or input_reading[0] == 'g'):
                 # Backwards
                 serial_handler.write("G".encode())
+                # print("python side backwards\n")
             elif (input_reading[0] == "H" or input_reading[0] == "h"):
                 # Right
                 serial_handler.write("H".encode())
+                # print("python side right turn\n")
             elif (input_reading[0] == "R" or input_reading[0] == "r"):
                 # stop
                 serial_handler.write("R".encode())
+                # print("python side stop\n")
+            elif (input_reading[0] == "K" or input_reading[0] == "k"):
+                # stop
+                break
 
 
 if __name__ == '__main__':

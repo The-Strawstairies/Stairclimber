@@ -15,10 +15,10 @@
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
 // Defines all four motors
-Adafruit_DCMotor *lf_motor = AFMS.getMotor(3);
-Adafruit_DCMotor *rf_motor = AFMS.getMotor(4);
-Adafruit_DCMotor *lb_motor = AFMS.getMotor(1);
-Adafruit_DCMotor *rb_motor = AFMS.getMotor(2);
+// Adafruit_DCMotor *lf_motor = AFMS.getMotor(3);
+// Adafruit_DCMotor *rf_motor = AFMS.getMotor(4);
+Adafruit_DCMotor *l_motor = AFMS.getMotor(3);
+Adafruit_DCMotor *r_motor = AFMS.getMotor(4);
 
 // start/stop variable
 int run = 0;
@@ -31,51 +31,33 @@ struct Speeds motor_speed;
 
 // PID_Controller pid = PID_Controller(0, 1.0, 0.0, 0.0);;
 
-void send_motor_cmd(int lf, int rf, int lb, int rb) {
+void send_motor_cmd(int l, int r) {
 		// drives motors at desired speeds
 		// (int left[-255 to 255], int right[-255 to 255]) -> void
 		// handles negative values as reverse direction
-		lf_motor->setSpeed(abs(lf));
-		rf_motor->setSpeed(abs(rf));
-		rb_motor->setSpeed(abs(rb));
-		lb_motor->setSpeed(abs(lb));
+		l_motor->setSpeed(abs(l));
+		r_motor->setSpeed(abs(r));
 
-		if(lf>0) lf_motor->run(FORWARD);
-		else lf_motor->run(BACKWARD);
+		if(l>0) l_motor->run(FORWARD);
+		else l_motor->run(BACKWARD);
 
-		if(rf>0) rf_motor->run(FORWARD);
-		else rf_motor->run(BACKWARD);
-
-		if(lb>0) lb_motor->run(FORWARD);
-		else lb_motor->run(BACKWARD);
-
-		if(rb>0) rb_motor->run(BACKWARD);
-		else rb_motor->run(FORWARD);
+		if(r>0) r_motor->run(FORWARD);
+		else r_motor->run(BACKWARD);
 }
 
 void drive_all(int speed) {
 		// drive all wheels at the same speed
-		send_motor_cmd(speed, speed, speed, speed);
+		send_motor_cmd(speed, speed);
 }
 
 void turn_counterclockwise(int speed){
 		// turn counterclockwise in place
-		send_motor_cmd(speed/2, -speed/2, -speed/2, speed/2);
+		send_motor_cmd(speed/2, -speed/2);
 }
 
 void turn_clockwise(int speed){
 		// turn clockwise in place
-		send_motor_cmd(-speed/2, speed/2, speed/2, -speed/2);
-}
-
-void drive_front(int speed) {
-		// drive front wheels of the robot
-		send_motor_cmd(speed, speed, 0, 0);
-}
-
-void drive_back(int speed) {
-		// drive back wheels of the robot
-		send_motor_cmd(0, 0, speed, speed);
+		send_motor_cmd(-speed/2, speed/2);
 }
 
 void serialReader() {
@@ -103,7 +85,6 @@ void serialReader() {
 				float vel = Serial.parseFloat();
 				Serial.println("setting speed constant");
 				motor_speed.linvel = vel;
-
 		// Use modes for keyboard drive
 		} else if (Serial.peek() == 'R') {
 				// Stop
@@ -137,7 +118,7 @@ void serialReader() {
 void setup() {
 		// setup the motor shield controller
 		AFMS.begin();
-		send_motor_cmd(0, 0, 0, 0);
+		send_motor_cmd(0, 0);
 		Serial.begin(115200);
 		delay(10);
 }
@@ -181,8 +162,8 @@ void loop() {
 
 		// log values
 		// LOG,time,left,right,sensor_left, sensor_right
-		// Serial.print("LOG,Motors,");
-		// Serial.println(String(motor_speed.linvel));
+		//Serial.print("LOG,Motors,");
+		//Serial.println(String(motor_speed.linvel));
 
 	} else {
 		drive_all(0);
