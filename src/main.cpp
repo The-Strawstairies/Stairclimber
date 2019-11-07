@@ -19,6 +19,9 @@ double current_angle = 0;
 // Define a pid controller -> pid(setpoint (angle), p, i, d)
 pid pid_control = pid(0, 1.0, 0.0, 0.0);
 
+// delay variables for handling delayed print statements
+unsigned long lastMillis;
+unsigned long wait = 1000; // ms to delay code block
 
 void read_accel(){
 	// Reads the accelerometer values and updates the imu_vals struct
@@ -100,12 +103,23 @@ void loop(){
 	pid_control.loopStep(current_angle);
 	balancer.write(12);
 
-	if (millis() % 1000 == 0){
+	// if (millis() % 1000 == 0){
+	// 	Serial.print("pid output");
+	// 	Serial.print(pid_control.output);
+	// 	Serial.print(" raw reading ");
+	// 	Serial.println(imu_vals.GyX);
+	// }
+
+	// wait between prints
+	if (millis() - lastMillis >= wait) {
 		Serial.print("pid output");
 		Serial.print(pid_control.output);
 		Serial.print(" raw reading ");
 		Serial.println(imu_vals.GyX);
+
+		lastMillis = millis();
 	}
+
 	//print_imu_values();
 	//delay(200);
 }
