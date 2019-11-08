@@ -46,7 +46,7 @@ void pid::loopStep(double curr_angle) {
 
 		// timing math
 		unsigned long now = micros();
-		unsigned long dt = (now - lastRun)/1000000.0;
+		unsigned long dt = now - lastRun;
 		lastRun = now;
 
 		// run the loop
@@ -58,5 +58,4 @@ void pid::loopStep(double curr_angle) {
 		output = (Kp * error) + (Ki * integral) + (Kd * derivative);
 		// 	previous_error = error
 		previousError = error;
-
 };

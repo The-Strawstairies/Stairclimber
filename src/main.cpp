@@ -8,13 +8,56 @@
 #include "pid.h"
 #include "main.h"
 #include "Servo.h"
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
+
+// object representing the gyro
+MPU6050 mpu;
 
 //Servo Setup
 Servo balancer;
 
-struct imu_data imu_vals;
+// ================================================================
+// ===               GYRO SETUP                                 ===
+// ================================================================
 
-double current_angle = 0;
+
+#define INTERRUPT_PIN 2  // use pin 2 on Arduino Uno & most boards
+#define LED_PIN 13 // (Arduino is 13, Teensy is 11, Teensy++ is 6)
+bool blinkState = false;
+
+// MPU control/status vars
+bool dmpReady = false;  // set true if DMP init was successful
+uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
+uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
+uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
+uint16_t fifoCount;     // count of all bytes currently in FIFO
+uint8_t fifoBuffer[64]; // FIFO storage buffer
+
+// orientation/motion vars
+Quaternion q;           // [w, x, y, z]         quaternion container
+VectorInt16 aa;         // [x, y, z]            accel sensor measurements
+VectorInt16 aaReal;     // [x, y, z]            gravity-free accel sensor measurements
+VectorInt16 aaWorld;    // [x, y, z]            world-frame accel sensor measurements
+VectorFloat gravity;    // [x, y, z]            gravity vector
+float euler[3];         // [psi, theta, phi]    Euler angle container
+float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+
+// output angle of sensor for pid use
+double currentAngle;
+
+// ================================================================
+// ===               INTERRUPT DETECTION ROUTINE                ===
+// ================================================================
+
+volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin has gone high
+void dmpDataReady() {
+    mpuInterrupt = true;
+}
+
+// ================================================================
+// ===               PID Setup                                  ===
+// ================================================================
 
 // Define a pid controller -> pid(setpoint (angle), p, i, d)
 pid pid_control = pid(0, 1.0, 0.0, 0.0);
@@ -23,103 +66,128 @@ pid pid_control = pid(0, 1.0, 0.0, 0.0);
 unsigned long lastMillis;
 unsigned long wait = 1000; // ms to delay code block
 
-void read_accel(){
-	// Reads the accelerometer values and updates the imu_vals struct
-	Wire.beginTransmission(MPU_ADDR);
-	Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
-	Wire.endTransmission(false);
-	Wire.requestFrom(MPU_ADDR,3*2,true);  // request a total of 6 registers
-
-	// /16384.0 converts to g force
-	imu_vals.AcX = double(Wire.read()<<8|Wire.read()) / 16384.0;  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)   
-	imu_vals.AcY = double(Wire.read()<<8|Wire.read()) / 16384.0;  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-	imu_vals.AcZ = double(Wire.read()<<8|Wire.read()) / 16384.0;  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-}
-
-void read_gyro(){
-	// Reads the gyro values and updates the imu_vals struct
-	Wire.beginTransmission(MPU_ADDR);
-	Wire.write(0x43);  // starting with register 0x43 (GYRO_XOUT_H)
-	Wire.endTransmission(false);
-	Wire.requestFrom(MPU_ADDR,3*2,true);  // request a total of 6 registers
-
-	// /131.0 converts to rotation in degrees (depends on gyro mode set - refer to datasheet)
-	imu_vals.GyX = double(Wire.read()<<8|Wire.read()) / 131.0;  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
-	imu_vals.GyY = double(Wire.read()<<8|Wire.read()) / 131.0;  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
-	imu_vals.GyZ = double(Wire.read()<<8|Wire.read()) / 131.0;  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
-}
-
-void update_angle(double gyro_reading) {
-	// update the current angle given change from gyro & time step
-	if (abs(gyro_reading) > 10){
-		current_angle += (gyro_reading);
-	}
-}
-
-void print_imu_values(){
-	Serial.print("AcX = "); Serial.print(imu_vals.AcX);
-	Serial.print(" | AcY = "); Serial.print(imu_vals.AcY);
-	Serial.print(" | AcZ = "); Serial.print(imu_vals.AcZ);
-	
-	Serial.print(" | GyX = "); Serial.print(imu_vals.GyX);
-	Serial.print(" | GyY = "); Serial.print(imu_vals.GyY);
-	Serial.print(" | GyZ = "); Serial.println(imu_vals.GyZ);
-}
-
-
 void setup(){
 	// Servo setup
 	balancer.attach(10);
-	
+	balancer.write(12);
 	// IMU config
 	Wire.begin();
-	Wire.beginTransmission(MPU_ADDR);
-	Wire.write(0x6B);  // PWR_MGMT_1 register
-	Wire.write(0);     // set to zero (wakes up the MPU-6050)
-	Wire.endTransmission(true);
-	
-	// Setting gyro config
-	Wire.beginTransmission(MPU_ADDR);
-	Wire.write(0x1B); 		// gyro config register
-	Wire.write(0); // sets to +/- 250 deg/sec (lower range, higher sensitivity) 
-	Wire.endTransmission(true);
-	// Setting accel config
-	Wire.beginTransmission(MPU_ADDR);
-	Wire.write(0x1C); 		// gyro config register
-	Wire.write(0); // sets to +/- 2g (lower range, higher sensitivity) 
-	Wire.endTransmission(true);
+	Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
 
 	Serial.begin(115200);
+
+	mpu.initialize();
+	pinMode(INTERRUPT_PIN, INPUT);
+
+	devStatus = mpu.dmpInitialize();
+
+	mpu.setXGyroOffset(220);
+    mpu.setYGyroOffset(76);
+    mpu.setZGyroOffset(-85);
+    mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+
+	// make sure it worked (returns 0 if so)
+    if (devStatus == 0) {
+        // Calibration Time: generate offsets and calibrate our MPU6050
+        mpu.CalibrateAccel(6);
+        mpu.CalibrateGyro(6);
+        mpu.PrintActiveOffsets();
+        // turn on the DMP, now that it's ready
+        Serial.println(F("Enabling DMP..."));
+        mpu.setDMPEnabled(true);
+
+        // enable Arduino interrupt detection
+        Serial.print(F("Enabling interrupt detection (Arduino external interrupt "));
+        Serial.print(digitalPinToInterrupt(INTERRUPT_PIN));
+        Serial.println(F(")..."));
+        attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
+        mpuIntStatus = mpu.getIntStatus();
+
+        // set our DMP Ready flag so the main loop() function knows it's okay to use it
+        Serial.println(F("DMP ready! Waiting for first interrupt..."));
+        dmpReady = true;
+
+        // get expected DMP packet size for later comparison
+        packetSize = mpu.dmpGetFIFOPacketSize();
+    } else {
+        // ERROR!
+        // 1 = initial memory load failed
+        // 2 = DMP configuration updates failed
+        // (if it's going to break, usually the code will be 1)
+        Serial.print(F("DMP Initializatioxn failed (code "));
+        Serial.print(devStatus);
+        Serial.println(F(")"));
+    }
 }
 
 void loop(){
-	read_accel();
-	read_gyro();
+	// if programming failed, don't try to do anything
+    // if (!dmpReady) return;
 
-	// adjust the current angle
-	update_angle(imu_vals.GyX);
+	// wait for MPU interrupt or extra packet(s) available
+    while (!mpuInterrupt && fifoCount < packetSize) {
+        if (mpuInterrupt && fifoCount < packetSize) {
+          // try to get out of the infinite loop 
+          fifoCount = mpu.getFIFOCount();
+        }  
+        // other program behavior stuff here
+        // .
+        // .
+        // .
+        // if you are really paranoid you can frequently test in between other
+        // stuff to see if mpuInterrupt is true, and if so, "break;" from the
+        // while() loop to immediately process the MPU data
+        // .
+        // .
+        // .
+    }
 
-	// given angle, update current angle
-	pid_control.loopStep(current_angle);
-	balancer.write(12);
+	// reset interrupt flag and get INT_STATUS byte
+    mpuInterrupt = false;
+    mpuIntStatus = mpu.getIntStatus();
 
-	// if (millis() % 1000 == 0){
-	// 	Serial.print("pid output");
-	// 	Serial.print(pid_control.output);
-	// 	Serial.print(" raw reading ");
-	// 	Serial.println(imu_vals.GyX);
-	// }
-
-	// wait between prints
-	if (millis() - lastMillis >= wait) {
-		Serial.print("pid output");
-		Serial.print(pid_control.output);
-		Serial.print(" raw reading ");
-		Serial.println(imu_vals.GyX);
-
-		lastMillis = millis();
+	// get current FIFO count
+    fifoCount = mpu.getFIFOCount();
+	if(fifoCount < packetSize){
+	        //Lets go back and wait for another interrupt. We shouldn't be here, we got an interrupt from another event
+			// This is blocking so don't do it   while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
 	}
+	// check for overflow (this should never happen unless our code is too inefficient)
+    else if ((mpuIntStatus & _BV(MPU6050_INTERRUPT_FIFO_OFLOW_BIT)) || fifoCount >= 1024) {
+        // reset so we can continue cleanly
+        mpu.resetFIFO();
+      //  fifoCount = mpu.getFIFOCount();  // will be zero after reset no need to ask
+        Serial.println(F("FIFO overflow!"));
 
-	//print_imu_values();
-	//delay(200);
+    // otherwise, check for DMP data ready interrupt (this should happen frequently)
+    } else if (mpuIntStatus & _BV(MPU6050_INTERRUPT_DMP_INT_BIT)) {
+
+		// read a packet from FIFO
+		while(fifoCount >= packetSize){ // Lets catch up to NOW, someone is using the dreaded delay()!
+			mpu.getFIFOBytes(fifoBuffer, packetSize);
+			// track FIFO count here in case there is > 1 packet available
+			// (this lets us immediately read more without waiting for an interrupt)
+			fifoCount -= packetSize;
+		}
+
+		currentAngle = ypr[2] * 180/M_PI;
+
+		double servoOutput = map(currentAngle, 0, 30, 12,42);
+
+		mpu.dmpGetQuaternion(&q, fifoBuffer);
+		mpu.dmpGetGravity(&gravity, &q);
+		mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+		Serial.print("Yaw Pitch Roll PID\t");
+		Serial.print(ypr[0] * 180/M_PI);
+		Serial.print("\t");
+		Serial.print(ypr[1] * 180/M_PI);
+		Serial.print("\t");
+		Serial.print(ypr[2] * 180/M_PI);
+		Serial.print("\t");
+		Serial.println(servoOutput);
+
+		// output of gyro: -30-> 150
+
+		balancer.write(servoOutput);
+	}
 }
