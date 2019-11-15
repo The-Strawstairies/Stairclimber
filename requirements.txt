@@ -1,1 +1,6 @@
 platformio==4.0.0
+pyserial
+pandas
+numpy
+scipy
+matplotlib
