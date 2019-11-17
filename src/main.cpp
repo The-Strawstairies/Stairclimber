@@ -4,21 +4,13 @@
  * By Sam Daitzman, David Tarazi, and Dieter Brehm
  */
 #include "Arduino.h"
-#include "Adafruit_MotorShield.h"
 #include "Wire.h"
-#include "utility/Adafruit_MS_PWMServoDriver.h"
 #include "pid.h"
 #include "drivetrain.h"
+#include "CytronMotorDriver.h"
 
-// indicate which motor pins are being used on
-// the motor shield
-Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-
-// Defines all four motors
-// Adafruit_DCMotor *lf_motor = AFMS.getMotor(3);
-// Adafruit_DCMotor *rf_motor = AFMS.getMotor(4);
-Adafruit_DCMotor *l_motor = AFMS.getMotor(3);
-Adafruit_DCMotor *r_motor = AFMS.getMotor(4);
+CytronMD l_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
+CytronMD r_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
 
 // start/stop variable
 int run = 0;
@@ -35,14 +27,8 @@ void send_motor_cmd(int l, int r) {
 		// drives motors at desired speeds
 		// (int left[-255 to 255], int right[-255 to 255]) -> void
 		// handles negative values as reverse direction
-		l_motor->setSpeed(abs(l));
-		r_motor->setSpeed(abs(r));
-
-		if(l>0) l_motor->run(FORWARD);
-		else l_motor->run(BACKWARD);
-
-		if(r>0) r_motor->run(FORWARD);
-		else r_motor->run(BACKWARD);
+		l_motor.setSpeed(l);
+		r_motor.setSpeed(r);
 }
 
 void drive_all(int speed) {
@@ -63,7 +49,7 @@ void turn_clockwise(int speed){
 void serialReader() {
 	// read the serial buffer for new operations which are:
 	// 	   START code -> S
-    //     STOP code  -> E
+  //     STOP code  -> E
 	// 	   VEL code   -> V50.0
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
@@ -117,7 +103,6 @@ void serialReader() {
 
 void setup() {
 		// setup the motor shield controller
-		AFMS.begin();
 		send_motor_cmd(0, 0);
 		Serial.begin(115200);
 		delay(10);

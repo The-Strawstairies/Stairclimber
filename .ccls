@@ -1,20 +1,24 @@
 clang
--I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/include
--I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/src
--I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783
--I/Users/dieterbrehm/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/cores/arduino
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/variants/standard
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src
--I/Users/dieterbrehm/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src
--I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/avr/include
--I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include
--I/Users/dieterbrehm/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include-fixed
--I/Users/dieterbrehm/.platformio/packages/tool-unity
--DPLATFORMIO=40003
+-I/home/dieter/git/strawstairies/Stairclimber-v1/include
+-I/home/dieter/git/strawstairies/Stairclimber-v1/src
+-I/home/dieter/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Servo_ID883/src
+-I/home/dieter/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Cytron Motor Drivers Library_ID6145
+-I/home/dieter/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783
+-I/home/dieter/git/strawstairies/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility
+-I/home/dieter/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src
+-I/home/dieter/.platformio/packages/framework-arduinoavr/cores/arduino
+-I/home/dieter/.platformio/packages/framework-arduinoavr/variants/standard
+-I/home/dieter/git/strawstairies/Stairclimber-v1/lib/I2Cdev
+-I/home/dieter/git/strawstairies/Stairclimber-v1/lib/MPU6050
+-I/home/dieter/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/EEPROM/src
+-I/home/dieter/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/HID/src
+-I/home/dieter/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SPI/src
+-I/home/dieter/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/SoftwareSerial/src
+-I/home/dieter/.platformio/packages/toolchain-atmelavr/avr/include
+-I/home/dieter/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include
+-I/home/dieter/.platformio/packages/toolchain-atmelavr/lib/gcc/avr/5.4.0/include-fixed
+-I/home/dieter/.platformio/packages/tool-unity
+-DPLATFORMIO=40000
 -DARDUINO_AVR_UNO
 -DF_CPU=16000000L
 -DARDUINO_ARCH_AVR
