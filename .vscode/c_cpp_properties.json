@@ -8,7 +8,10 @@
             "includePath": [
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/include",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/src",
+                "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/lib/MPU6050",
+                "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/lib/I2Cdev",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Servo_ID883/src",
+                "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Cytron Motor Drivers Library_ID6145",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783",
                 "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility",
                 "C:/Users/dtarazi/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
@@ -26,7 +29,10 @@
                 "path": [
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/include",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/src",
+                    "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/lib/MPU6050",
+                    "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/lib/I2Cdev",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Servo_ID883/src",
+                    "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Cytron Motor Drivers Library_ID6145",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783",
                     "c:/Users/dtarazi/Documents/PoE/Stairclimber-v1/.pio/libdeps/uno/Adafruit Motor Shield V2 Library_ID783/utility",
                     "C:/Users/dtarazi/.platformio/packages/framework-arduinoavr/libraries/__cores__/arduino/Wire/src",
@@ -41,7 +47,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=40003",
+                "PLATFORMIO=40100",
                 "ARDUINO_AVR_UNO",
                 "F_CPU=16000000L",
                 "ARDUINO_ARCH_AVR",
