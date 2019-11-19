@@ -124,6 +124,13 @@ void loop() {
 		// S = run
 		// E = stop running
 
+    // log values
+
+		// LOG,time,left,right,sensor_left, sensor_right
+		Serial.print("LOG,Motors,");
+		Serial.print(String(motor_speed.linvel));
+		Serial.print(",Time,");
+		Serial.println(millis());
 		switch(mode){
 			case 0:
 				drive_all(0);
@@ -144,12 +151,6 @@ void loop() {
 				drive_all(0);
 				break;
 		}
-
-		// log values
-		// LOG,time,left,right,sensor_left, sensor_right
-		//Serial.print("LOG,Motors,");
-		//Serial.println(String(motor_speed.linvel));
-
 	} else {
 		drive_all(0);
 	}
