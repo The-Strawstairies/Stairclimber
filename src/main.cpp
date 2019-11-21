@@ -1,13 +1,15 @@
 
 /*
- * Line Following Robot
- * By Sam Daitzman, David Tarazi, and Dieter Brehm
+ * Stair climber
+ * By Caroline Rausch, Sam Daitzman, David Tarazi, and Dieter Brehm
  */
 #include "Arduino.h"
 #include "Wire.h"
 #include "pid.h"
 #include "drivetrain.h"
 #include "CytronMotorDriver.h"
+#include "Adafruit_MS_PWMServoDriver.h"
+#include "Adafruit_MotorShield.h"
 
 CytronMD l_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
 CytronMD r_motor(PWM_DIR, 5, 6); // PWM = Pin 3, DIR = Pin 4
@@ -29,6 +31,7 @@ void send_motor_cmd(int l, int r) {
 		// handles negative values as reverse direction
 		l_motor.setSpeed(l);
 		r_motor.setSpeed(-r);
+		delay(10);
 }
 
 void drive_all(int speed) {
@@ -124,7 +127,7 @@ void loop() {
 		// S = run
 		// E = stop running
 
-    // log values
+    	// log values
 
 		// LOG,time,left,right,sensor_left, sensor_right
 		Serial.print("LOG,Motors,");
@@ -150,6 +153,8 @@ void loop() {
 			default:
 				drive_all(0);
 				break;
+		// l_motor.setSpeed(200);
+		// r_motor.setSpeed(200);
 		}
 	} else {
 		drive_all(0);
