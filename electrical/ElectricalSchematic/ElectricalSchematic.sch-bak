@@ -544,9 +544,17 @@ Wire Wire Line
 	8250 1800 8250 2150
 Wire Wire Line
 	8250 2250 8250 2650
-Wire Bus Line
-	3250 3900 4650 3900
 Connection ~ 8250 2250
 Wire Wire Line
 	8250 2250 8550 2250
+Wire Wire Line
+	4700 5650 5100 5650
+Wire Wire Line
+	4700 5750 5100 5750
+Wire Bus Line
+	3250 3900 4650 3900
+Text Label 4800 5750 0    50   ~ 0
+Servo2
+Text Label 4800 5650 0    50   ~ 0
+Servo1
 $EndSCHEMATC

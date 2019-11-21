@@ -1142,8 +1142,7 @@ DRAW
 S -800 -100 -150 -850 0 1 0 f
 X 5-12V_input+ ~ -900 -200 100 R 50 50 0 0 W
 X 5-12V_input- ~ -900 -300 100 R 50 50 0 0 W
-X Servo_pwm1 ~ -50 -650 100 L 50 50 0 0 O
-X Servo_pwm2 ~ -50 -750 100 L 50 50 0 0 O
+X Servo_pwm1 ~ -50 -750 100 L 50 50 0 0 O
 ENDDRAW
 ENDDEF
 #
