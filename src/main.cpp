@@ -28,7 +28,7 @@ void send_motor_cmd(int l, int r) {
 		// (int left[-255 to 255], int right[-255 to 255]) -> void
 		// handles negative values as reverse direction
 		l_motor.setSpeed(l);
-		r_motor.setSpeed(r);
+		r_motor.setSpeed(-r);
 }
 
 void drive_all(int speed) {
