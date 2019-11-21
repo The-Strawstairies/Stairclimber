@@ -10,7 +10,7 @@
 #include "CytronMotorDriver.h"
 
 CytronMD l_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
-CytronMD r_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
+CytronMD r_motor(PWM_DIR, 5, 6); // PWM = Pin 3, DIR = Pin 4
 
 // start/stop variable
 int run = 0;
