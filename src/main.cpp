@@ -10,7 +10,7 @@
 #include "CytronMotorDriver.h"
 
 CytronMD l_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
-CytronMD r_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
+CytronMD r_motor(PWM_DIR, 5, 6); // PWM = Pin 3, DIR = Pin 4
 
 // start/stop variable
 // int run = 0;
@@ -104,16 +104,16 @@ CytronMD r_motor(PWM_DIR, 3, 4); // PWM = Pin 3, DIR = Pin 4
 void setup() {
 		// setup the motor shield controller
 		// send_motor_cmd(0, 0);
-		l_motor.setSpeed(100);
-		r_motor.setSpeed(100);
+		l_motor.setSpeed(200);
+		r_motor.setSpeed(-200);
 		// Serial.begin(115200);
 		delay(10);
 }
 
 void loop() {
 		//print out the sensor reading to the serial
-		l_motor.setSpeed(100);
-		r_motor.setSpeed(100);
+		l_motor.setSpeed(200);
+		r_motor.setSpeed(-200);
 		delay(10);
 		// respond to serial operations
 		// serialReader();
