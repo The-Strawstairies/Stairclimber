@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import serial
 #import numpy as np
-#import pandas as pd
+# import pandas as pd
 #import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 import math
@@ -15,7 +15,7 @@ import sys, select, termios, tty
 
 def setup_serial():
     """ Setup serial connection object"""
-    arduino_com_port = "/dev/ttyACM0"
+    arduino_com_port = "/dev/cu.usbmodem14201"
     baud_rate = 115200
     serial_port = serial.Serial(arduino_com_port, baud_rate, timeout=1)
     return serial_port
@@ -70,8 +70,7 @@ def main():
     # as a daemon
     input_queue = queue.Queue()
     kbd_thread = threading.Thread(target=read_kbd,
-                                  args=(input_queue,),
-                                  daemon=True)
+                                  args=(input_queue,))
     kbd_thread.start()
 
     # setup the serial object
@@ -101,10 +100,10 @@ def main():
                 print("python side end\n")
                 # convert to dataframe and write to a csv when
                 # we stop the program!
-                df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
-                df.to_csv("robot_run", sep=',', encoding='utf-8')
+                # df = pd.DataFrame(data_recorder[1:], columns=data_recorder[0])
+                # df.to_csv("robot_run", sep=',', encoding='utf-8')
                 # print it out to see if that worked
-                print(df)
+                # print(df)
             elif (input_reading[0] == "V" or input_reading[0] == "v"):
                 # change the speed of the robot
                 output = "V" + input_reading[1:]
