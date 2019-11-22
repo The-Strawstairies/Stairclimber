@@ -3,7 +3,7 @@
 
 struct Speeds {
 	// struct
-	float linvel = 30;
+	float linvel = 75;
 	float l;
 	float r;
 };
