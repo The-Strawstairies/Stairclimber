@@ -68,12 +68,18 @@ void serialReader() {
 				Serial.println("ending the drive loop");
 				mode = 0;
 				run = 0;
-		} else if (Serial.peek() == 'V') {
+		} else if (Serial.peek() == ',') {
 				// read new derivative value
 				Serial.read();
 				float vel = Serial.parseFloat();
-				Serial.println("setting speed constant");
-				motor_speed.linvel = vel;
+				Serial.println("lower speed");
+				motor_speed.linvel = abs(motor_speed.linvel - 30);
+		} else if (Serial.peek() == '.') {
+				// read new derivative value
+				Serial.read();
+				float vel = Serial.parseFloat();
+				Serial.println("increase speed");
+				motor_speed.linvel = abs(motor_speed.linvel + 30);
 		// Use modes for keyboard drive
 		} else if (Serial.peek() == 'R') {
 				// Stop
