@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:ElectricalSchematic-cache
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
@@ -388,46 +389,10 @@ F 3 "" H 8900 1650 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8900 1900 8900 1650
-Connection ~ 8900 1900
 Wire Wire Line
 	9100 1900 8900 1900
 Wire Wire Line
-	8900 2450 8900 1900
-Wire Wire Line
-	9100 2450 8900 2450
-Wire Wire Line
-	8800 2000 8800 2550
-Wire Wire Line
-	8800 2550 8800 2750
-Connection ~ 8800 2550
-Wire Wire Line
-	9100 2550 8800 2550
-Wire Wire Line
-	9100 2000 8800 2000
-$Comp
-L power:GND #PWR?
-U 1 1 5DC957BD
-P 8800 2750
-F 0 "#PWR?" H 8800 2500 50  0001 C CNN
-F 1 "GND" H 8805 2577 50  0000 C CNN
-F 2 "" H 8800 2750 50  0001 C CNN
-F 3 "" H 8800 2750 50  0001 C CNN
-	1    8800 2750
-	1    0    0    -1  
-$EndComp
-Text Notes 9250 2200 0    50   ~ 0
-Drives the balance control
-$Comp
-L Motor:Motor_Servo M?
-U 1 1 5DC8DF14
-P 9400 2450
-F 0 "M?" H 9732 2515 50  0000 L CNN
-F 1 "Motor_Servo" H 9732 2424 50  0000 L CNN
-F 2 "" H 9400 2260 50  0001 C CNN
-F 3 "http://forums.parallax.com/uploads/attachments/46831/74481.png" H 9400 2260 50  0001 C CNN
-	1    9400 2450
-	1    0    0    -1  
-$EndComp
+	9100 2000 8900 2000
 $Comp
 L Motor:Motor_Servo M?
 U 1 1 5DC8C00A
@@ -475,34 +440,11 @@ F 3 "" H 7050 1900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7250 1700 7050 1700
-Wire Wire Line
 	7050 1700 7050 1500
-$Comp
-L 11.1V:MotorShield_simplified U?
-U 1 1 5DCC7808
-P 8150 1500
-F 0 "U?" H 7675 1565 50  0000 C CNN
-F 1 "MotorShield_simplified" H 7675 1474 50  0000 C CNN
-F 2 "" H 8200 1650 50  0001 C CNN
-F 3 "" H 8200 1650 50  0001 C CNN
-	1    8150 1500
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7250 1800 7050 1800
 Wire Wire Line
 	7050 1800 7050 1900
 Wire Wire Line
-	8100 2150 8250 2150
-Wire Wire Line
-	8550 2150 8550 1800
-Wire Wire Line
 	8550 1800 9100 1800
-Wire Wire Line
-	8550 2250 8550 2350
-Wire Wire Line
-	8550 2350 9100 2350
 Wire Wire Line
 	5150 3000 5150 4950
 Wire Wire Line
@@ -531,22 +473,49 @@ Wire Wire Line
 	7050 5700 7050 5350
 Wire Wire Line
 	7050 5350 4700 5350
-Connection ~ 8250 2150
 Wire Wire Line
-	8250 2150 8550 2150
-Wire Wire Line
-	8100 2250 8250 2250
-Text Label 8250 2100 1    50   ~ 0
+	4700 5650 5100 5650
+Text Label 4800 5650 0    50   ~ 0
 Servo1
-Text Label 8250 2550 1    50   ~ 0
-Servo2
+$Comp
+L 11.1V:GND #PWR?
+U 1 1 5DD84ACB
+P 8900 2150
+F 0 "#PWR?" H 8900 1900 50  0001 C CNN
+F 1 "GND" H 8905 1977 50  0000 C CNN
+F 2 "" H 8900 2150 50  0001 C CNN
+F 3 "" H 8900 2150 50  0001 C CNN
+	1    8900 2150
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
-	8250 1800 8250 2150
+	8900 2000 8900 2150
 Wire Wire Line
-	8250 2250 8250 2650
-Wire Bus Line
-	3250 3900 4650 3900
-Connection ~ 8250 2250
+	7250 1800 7050 1800
+Wire Wire Line
+	7250 1700 7050 1700
+Wire Wire Line
+	8250 1900 8250 2250
+Text Label 8250 2200 1    50   ~ 0
+Servo1
 Wire Wire Line
 	8250 2250 8550 2250
+Wire Wire Line
+	8100 2250 8250 2250
+$Comp
+L 11.1V:MotorShield_simplified U?
+U 1 1 5DCC7808
+P 8150 1500
+F 0 "U?" H 7675 1565 50  0000 C CNN
+F 1 "MotorShield_simplified" H 7675 1474 50  0000 C CNN
+F 2 "" H 8200 1650 50  0001 C CNN
+F 3 "" H 8200 1650 50  0001 C CNN
+	1    8150 1500
+	1    0    0    -1  
+$EndComp
+Connection ~ 8250 2250
+Wire Wire Line
+	8550 1800 8550 2250
+Wire Bus Line
+	3250 3900 4650 3900
 $EndSCHEMATC
