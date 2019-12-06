@@ -57,12 +57,12 @@ void serialReader() {
 	// NOTE: parse float is blocking, we'll have to see how messy that is.
 	// AND: assumes that the end of a line has a line ending character
 	if (Serial.available() > 0) {
-		if (Serial.peek() == 'S') {
+		if (Serial.peek() == 's') {
 				// start the program
 				Serial.read();
 				Serial.println("starting the drive loop");
 				run = 1;
-		} else if (Serial.peek() == 'E') {
+		} else if (Serial.peek() == 'e') {
 				// end the program
 				Serial.read();
 				Serial.println("ending the drive loop");
@@ -81,11 +81,11 @@ void serialReader() {
 				Serial.println("increase speed");
 				motor_speed.linvel = abs(motor_speed.linvel + 30);
 		// Use modes for keyboard drive
-		} else if (Serial.peek() == 'R') {
+		} else if (Serial.peek() == 'r') {
 				// Stop
 				Serial.read();
 				mode = 0;
-		} else if (Serial.peek() == 'T') {
+		} else if (Serial.peek() == 't') {
 				// Forwards
 				Serial.read();
 				mode = 1;
@@ -93,7 +93,7 @@ void serialReader() {
 				// Counter-clockwise turn in place
 				Serial.read();
 				mode = 2;
-		} else if (Serial.peek() == 'G') {
+		} else if (Serial.peek() == 'g') {
 				// Backwards
 				Serial.read();
 				mode = 3;
