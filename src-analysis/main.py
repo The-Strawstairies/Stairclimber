@@ -15,7 +15,7 @@ import sys, select, termios, tty
 
 def setup_serial():
     """ Setup serial connection object"""
-    arduino_com_port = "/dev/cu.usbmodem14201"
+    arduino_com_port = "/dev/ttyACM0"
     baud_rate = 115200
     serial_port = serial.Serial(arduino_com_port, baud_rate, timeout=1)
     return serial_port
