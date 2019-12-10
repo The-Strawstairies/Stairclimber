@@ -327,8 +327,11 @@ uint8_t MPU6050::dmpInitialize() {
 	DEBUG_PRINTLN(F("Setting DLPF bandwidth to 42Hz..."));
 	setDLPFMode(MPU6050_DLPF_BW_42);
 
-	DEBUG_PRINTLN(F("Setting gyro sensitivity to +/- 2000 deg/sec..."));
-	setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+	DEBUG_PRINTLN(F("Setting gyro sensitivity to +/- 250 deg/sec..."));
+	setFullScaleGyroRange(MPU6050_GYRO_FS_250);
+
+	DEBUG_PRINTLN(F("Setting Accel sensitivity to +/- 2g..."));
+	setFullScaleAccelRange(MPU6050_ACCEL_FS_2);
 
 	// load DMP code into memory banks
 	DEBUG_PRINT(F("Writing DMP code to MPU memory banks ("));
